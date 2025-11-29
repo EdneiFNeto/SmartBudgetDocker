@@ -1,0 +1,14 @@
+# Environment variables
+.env
+.env.local
+
+# Docker volumes
+postgres_data/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
