@@ -2,6 +2,10 @@
 
 Este projeto contém a configuração Docker para um banco de dados PostgreSQL.
 
+## 🤖 Sobre o Projeto
+
+Este projeto foi criado **100% usando Inteligência Artificial (IA)**, sem uso de ferramentas no-code. Todo o código, configurações e documentação foram gerados através de assistência de IA, demonstrando as capacidades da programação assistida por IA.
+
 ## 📋 Pré-requisitos
 
 - Docker instalado
