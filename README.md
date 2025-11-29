@@ -1,191 +1,199 @@
 # SmartBudgetDocker
 
-Este projeto contém a configuração Docker para um banco de dados PostgreSQL.
+This project contains Docker configuration for a PostgreSQL database.
 
-## 🤖 Sobre o Projeto
+## 🤖 About the Project
 
-Este projeto foi criado **100% usando Inteligência Artificial (IA)**, sem uso de ferramentas no-code. Todo o código, configurações e documentação foram gerados através de assistência de IA, demonstrando as capacidades da programação assistida por IA.
+This project was created **100% using Artificial Intelligence (AI)**, without using no-code tools. All code, configurations, and documentation were generated through AI assistance, demonstrating the capabilities of AI-assisted programming.
 
-## 📋 Pré-requisitos
+## 📋 Prerequisites
 
-- Docker instalado
-- Docker Compose instalado
+- Docker installed
+- Docker Compose installed
 
-## 🚀 Como usar
+## 🚀 How to Use
 
-### Opção 1: Usando Docker Compose (Recomendado)
+### Option 1: Using Docker Compose (Recommended)
 
-1. **Clone o repositório ou navegue até o diretório do projeto**
+1. **Clone the repository or navigate to the project directory**
 
-2. **Copie o arquivo .env.example para .env (opcional)**
-   ```bash
-   cp .env.example .env
-   ```
+2. **Configure environment variables (optional)**
    
-   Edite o arquivo `.env` para configurar suas credenciais se necessário.
-
-3. **Construa e inicie o container**
-   ```bash
-   ./iniciar-banco.sh
+   Create a `.env` file in the project root or configure variables directly in `docker-compose.yml`:
+   ```
+   POSTGRES_USER=your_user
+   POSTGRES_PASSWORD=your_secure_password
+   POSTGRES_DB=database_name
    ```
 
-4. **Verifique se o container está rodando**
+3. **Build and start the container**
+   ```bash
+   ./start-db.sh
+   ```
+
+4. **Verify the container is running**
    ```bash
    docker compose ps
    ```
 
-5. **Conecte ao banco de dados**
+5. **Connect to the database**
    ```bash
-   docker compose exec postgres psql -U marketplace_user -d marketplace_db
+   docker compose exec postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
    ```
 
-### Opção 2: Usando Docker diretamente
+### Option 2: Using Docker directly
 
-1. **Construa a imagem**
+1. **Build the image**
    ```bash
-   docker build -t marketplace-postgres .
+   docker build -t postgres-app .
    ```
 
-2. **Execute o container**
+2. **Run the container**
    ```bash
    docker run -d \
-     --name marketplace-postgres \
-     -e POSTGRES_USER=marketplace_user \
-     -e POSTGRES_PASSWORD=marketplace_password \
-     -e POSTGRES_DB=marketplace_db \
+     --name postgres-container \
+     -e POSTGRES_USER=${POSTGRES_USER} \
+     -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} \
+     -e POSTGRES_DB=${POSTGRES_DB} \
      -p 5432:5432 \
-     marketplace-postgres
+     postgres-app
    ```
+   
+   ⚠️ **Note**: Configure the environment variables `${POSTGRES_USER}`, `${POSTGRES_PASSWORD}` and `${POSTGRES_DB}` before running, or define them directly in the command.
 
-## 🔌 Conexão ao Banco de Dados
+## 🔌 Database Connection
 
-### String de Conexão
+### Connection String
+
+Configure credentials in the `.env` file or environment variables:
 
 ```
 Host: localhost
 Port: 5432
-Database: marketplace_db
-User: marketplace_user
-Password: marketplace_password
+Database: ${POSTGRES_DB}
+User: ${POSTGRES_USER}
+Password: ${POSTGRES_PASSWORD}
 ```
 
-### Exemplo de conexão (psql)
+### Connection example (psql)
 
 ```bash
-psql -h localhost -p 5432 -U marketplace_user -d marketplace_db
+psql -h localhost -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB}
 ```
 
-### Exemplo de conexão (Node.js/JavaScript)
+### Connection example (Node.js/JavaScript)
 
 ```javascript
 const { Client } = require('pg');
 
 const client = new Client({
-  host: 'localhost',
-  port: 5432,
-  database: 'marketplace_db',
-  user: 'marketplace_user',
-  password: 'marketplace_password',
+  host: process.env.DB_HOST || 'localhost',
+  port: process.env.DB_PORT || 5432,
+  database: process.env.POSTGRES_DB,
+  user: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
 });
 
 client.connect();
 ```
 
-## 📁 Estrutura do Projeto
+## 📁 Project Structure
 
 ```
 SmartBudgetDocker/
-├── Dockerfile                 # Configuração da imagem PostgreSQL
-├── docker-compose.yml         # Orquestração dos containers
-├── .dockerignore             # Arquivos ignorados no build
-├── .env.example              # Exemplo de variáveis de ambiente
-├── README.md                 # Este arquivo
-└── init-scripts/             # Scripts SQL executados na inicialização
-    └── 01-init.sql          # Script de criação de tabelas
+├── Dockerfile                 # PostgreSQL image configuration
+├── docker-compose.yml         # Container orchestration
+├── .dockerignore             # Files ignored in build
+├── .env                      # Environment variables (not versioned)
+├── README.md                 # This file
+└── init-scripts/             # SQL scripts executed on initialization
+    └── 01-init.sql          # Table creation script
 ```
 
-## 🔧 Scripts SQL
+## 🔧 SQL Scripts
 
-Os scripts na pasta `init-scripts/` são executados automaticamente na primeira inicialização do banco de dados. Eles criam:
+The scripts in the `init-scripts/` folder are executed automatically on the first database initialization. They can create:
 
-- Extensões PostgreSQL (uuid-ossp, pgcrypto)
-- Schema `marketplace`
-- Tabelas básicas (users, products, orders, order_items)
-- Índices para otimização
-- Triggers para atualização automática de timestamps
+- PostgreSQL extensions (uuid-ossp, pgcrypto, etc.)
+- Custom schemas
+- Tables as needed
+- Indexes for optimization
+- Custom triggers and functions
 
-## 🛠️ Comandos Úteis
+## 🛠️ Useful Commands
 
-### Ver logs do container
+### View container logs
 ```bash
 docker compose logs -f postgres
 ```
 
-### Parar o container
+### Stop the container
 ```bash
 docker compose stop
 ```
 
-### Iniciar o container (se já estiver criado)
+### Start the container (if already created)
 ```bash
 docker compose start
 ```
 
-### Remover o container e volumes
+### Remove container and volumes
 ```bash
 docker compose down -v
 ```
 
-### Executar um comando SQL
+### Execute a SQL command
 ```bash
-docker compose exec postgres psql -U marketplace_user -d marketplace_db -c "SELECT * FROM marketplace.users;"
+docker compose exec postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c "SELECT * FROM your_table;"
 ```
 
-### Fazer backup do banco
+### Backup the database
 ```bash
-docker compose exec postgres pg_dump -U marketplace_user marketplace_db > backup.sql
+docker compose exec postgres pg_dump -U ${POSTGRES_USER} ${POSTGRES_DB} > backup.sql
 ```
 
-### Restaurar backup
+### Restore backup
 ```bash
-docker compose exec -T postgres psql -U marketplace_user marketplace_db < backup.sql
+docker compose exec -T postgres psql -U ${POSTGRES_USER} ${POSTGRES_DB} < backup.sql
 ```
 
-## 🔒 Segurança
+## 🔒 Security
 
-⚠️ **IMPORTANTE**: As senhas padrão são apenas para desenvolvimento. Para produção:
+⚠️ **IMPORTANT**: Default passwords are for development only. For production:
 
-1. Use variáveis de ambiente seguras
-2. Não commite arquivos `.env` no repositório
+1. Use secure environment variables
+2. Do not commit `.env` files to the repository
 3. Use secrets management (Docker Secrets, AWS Secrets Manager, etc.)
-4. Configure SSL/TLS para conexões
-5. Implemente políticas de firewall adequadas
+4. Configure SSL/TLS for connections
+5. Implement adequate firewall policies
 
-## 📝 Personalização
+## 📝 Customization
 
-Você pode personalizar o banco de dados editando:
+You can customize the database by editing:
 
-- `init-scripts/01-init.sql` - Adicione suas próprias tabelas e estruturas
-- `docker-compose.yml` - Ajuste portas, volumes, e configurações
-- `.env` - Configure variáveis de ambiente específicas
+- `init-scripts/01-init.sql` - Add your own tables and structures
+- `docker-compose.yml` - Adjust ports, volumes, and configurations
+- `.env` - Configure environment variables (user, password, database name, etc.)
+
+⚠️ **Important**: Never commit the `.env` file to the repository. Use `.env.example` as a template and keep `.env` in `.gitignore`.
 
 ## 🐛 Troubleshooting
 
-### Porta já em uso
-Se a porta 5432 já estiver em uso, altere no `docker-compose.yml`:
+### Port already in use
+If port 5432 is already in use, change it in `docker-compose.yml`:
 ```yaml
 ports:
-  - "5433:5432"  # Use outra porta no host
+  - "5433:5432"  # Use another port on the host
 ```
 
-### Erro de permissão
-Se houver problemas de permissão, verifique se o diretório de dados tem as permissões corretas:
+### Permission error
+If you have permission issues, verify that the data directory has the correct permissions:
 ```bash
 sudo chown -R 999:999 postgres_data
 ```
 
-## 📚 Recursos Adicionais
+## 📚 Additional Resources
 
-- [Documentação PostgreSQL](https://www.postgresql.org/docs/)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
 - [Docker PostgreSQL Image](https://hub.docker.com/_/postgres)
 - [Docker Compose Documentation](https://docs.docker.com/compose/)

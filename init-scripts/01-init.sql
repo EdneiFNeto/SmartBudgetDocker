@@ -1,19 +1,19 @@
--- Script de inicialização do banco de dados Marketplace
--- Este arquivo será executado automaticamente quando o container for criado pela primeira vez
+-- Database initialization script
+-- This file will be executed automatically when the container is created for the first time
 
--- Criar extensões úteis
+-- Create useful extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- Criar schema para o marketplace
+-- Create schema for the application
 CREATE SCHEMA IF NOT EXISTS marketplace;
 
--- Definir o schema padrão
+-- Set default schema
 SET search_path TO marketplace, public;
 
--- Exemplo de tabelas para um marketplace (você pode customizar conforme necessário)
+-- Example tables for a marketplace (you can customize as needed)
 
--- Tabela de usuários
+-- Users table
 CREATE TABLE IF NOT EXISTS marketplace.users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS marketplace.users (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela de produtos
+-- Products table
 CREATE TABLE IF NOT EXISTS marketplace.products (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     seller_id UUID NOT NULL REFERENCES marketplace.users(id),
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS marketplace.products (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela de pedidos
+-- Orders table
 CREATE TABLE IF NOT EXISTS marketplace.orders (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES marketplace.users(id),
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS marketplace.orders (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela de itens do pedido
+-- Order items table
 CREATE TABLE IF NOT EXISTS marketplace.order_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     order_id UUID NOT NULL REFERENCES marketplace.orders(id) ON DELETE CASCADE,
@@ -55,13 +55,13 @@ CREATE TABLE IF NOT EXISTS marketplace.order_items (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Criar índices para melhorar performance
+-- Create indexes to improve performance
 CREATE INDEX IF NOT EXISTS idx_products_seller_id ON marketplace.products(seller_id);
 CREATE INDEX IF NOT EXISTS idx_orders_user_id ON marketplace.orders(user_id);
 CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON marketplace.order_items(order_id);
 CREATE INDEX IF NOT EXISTS idx_order_items_product_id ON marketplace.order_items(product_id);
 
--- Criar função para atualizar updated_at automaticamente
+-- Create function to automatically update updated_at
 CREATE OR REPLACE FUNCTION marketplace.update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -70,7 +70,7 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Criar triggers para atualizar updated_at
+-- Create triggers to update updated_at
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON marketplace.users
     FOR EACH ROW EXECUTE FUNCTION marketplace.update_updated_at_column();
 
@@ -79,4 +79,3 @@ CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON marketplace.products
 
 CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON marketplace.orders
     FOR EACH ROW EXECUTE FUNCTION marketplace.update_updated_at_column();
-

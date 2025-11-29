@@ -1,13 +1,12 @@
 FROM postgres:16-alpine
 
-# Definir variáveis de ambiente padrão
+# Set default environment variables
 ENV POSTGRES_USER=marketplace_user
 ENV POSTGRES_PASSWORD=marketplace_password
 ENV POSTGRES_DB=marketplace_db
 
-# Copiar scripts de inicialização
+# Copy initialization scripts
 COPY init-scripts/ /docker-entrypoint-initdb.d/
 
-# Expor a porta padrão do PostgreSQL
+# Expose default PostgreSQL port
 EXPOSE 5432
-

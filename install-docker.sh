@@ -1,23 +1,22 @@
 #!/bin/bash
 
-# Script para instalar Docker Desktop no macOS
-# Este script requer que você insira sua senha de administrador
+# Script to install Docker Desktop on macOS
+# This script requires you to enter your administrator password
 
-echo "🐳 Instalando Docker Desktop..."
+echo "🐳 Installing Docker Desktop..."
 echo ""
-echo "Você precisará inserir sua senha de administrador."
+echo "You will need to enter your administrator password."
 echo ""
 
-# Instalar Docker Desktop via Homebrew
+# Install Docker Desktop via Homebrew
 brew install --cask docker
 
-# Após a instalação, iniciar Docker Desktop
+# After installation, start Docker Desktop
 echo ""
-echo "✅ Instalação concluída!"
-echo "🚀 Iniciando Docker Desktop..."
+echo "✅ Installation completed!"
+echo "🚀 Starting Docker Desktop..."
 open -a Docker
 
 echo ""
-echo "⏳ Aguarde alguns segundos enquanto o Docker Desktop inicia..."
-echo "📋 Você pode verificar o status com: docker info"
-
+echo "⏳ Wait a few seconds while Docker Desktop starts..."
+echo "📋 You can check status with: docker info"
